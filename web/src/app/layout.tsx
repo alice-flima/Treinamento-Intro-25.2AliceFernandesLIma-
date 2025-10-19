@@ -1,17 +1,33 @@
-import type { Metadata } from "next";
-import { Rubik } from "next/font/google";
-import "./globals.css";
-import { ToastProvider } from "@/components/common/ToastProvider";
+'use client'
+
+import type { Metadata } from "next"
+import React from "react"
+import { useState } from "react"
+import Carrinho from "../components/Carrinho"
+import ListaProdutos from "../components/ListaProdutos"
+import { Rubik } from "next/font/google"
+import "./globals.css"
+import { ToastProvider } from "@/components/common/ToastProvider"
+import Header from "@/components/Header"
 
 const rubik = Rubik({
   variable: "--font-rubik",
   subsets: ["latin"],
 })
 
-export const metadata: Metadata = {
-  title: "Noctiluz",
-  description: "Plataforma para olimpíadas científicas e reforço escolar",
-};
+
+
+function App(){
+  const [verCarrinho, setVerCarrinho] = useState(false)
+  const PageContent = verCarrinho? <Carrinho /> : <  ListaProdutos />
+  const content = (
+    <>
+    <Header verCarrinho = {verCarrinho} setVerCarrinho={setVerCarrinho} />
+    {PageContent}
+    </>
+  )
+  return content
+}
 
 export default function RootLayout({
   children,
