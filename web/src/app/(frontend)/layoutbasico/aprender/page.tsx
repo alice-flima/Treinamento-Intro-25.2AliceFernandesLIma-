@@ -7,17 +7,12 @@ import Header from "@/components/Header";
 import Carrinho from "@/components/Carrinho";
 import ListaProdutos from "@/components/ListaProdutos";
 
-
-
 import { Rubik } from "next/font/google"
-
-
 
 const rubik = Rubik({
   variable: "--font-rubik",
   subsets: ["latin"],
 })
-
 
 
 export default function Page() {
