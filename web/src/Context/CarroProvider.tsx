@@ -1,3 +1,4 @@
+'use client'
 import { useReducer, useMemo, createContext, Dispatch, ReactNode, useContext } from "react"
 
 export type CarroItemType = {
