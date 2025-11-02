@@ -8,9 +8,11 @@ export async function GET(request: NextRequest){
     const dados = await EstatisticasService.dados(userId);
     const compras = dados.comprasUser;
     const valor = dados.precoTotal;
+    const produto_mais_comprado = dados.produtoMaisComprado;
     const estatisticas = {
       Numero_de_compras : compras, 
       Valor_total_das_compras: valor,
+      Produto_Mais_Comprado: produto_mais_comprado,
     };
     return NextResponse.json(estatisticas);
     }
