@@ -15,6 +15,7 @@ export async function GET(){
 export async function POST(request: NextRequest){
   try {
     const data = await request.json();
+    data.preco = Number(data.preco);
     const validationResult = produtoSchema.safeParse(data);
     if (!validationResult.success) {
       return NextResponse.json({ error: 'Erro de validação' }, { status: 400 });
@@ -31,6 +32,7 @@ export async function PUT(request: NextRequest){
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
     const data = await request.json();
+    data.preco = Number(data.preco);
     const validationResult = produtoSchema.safeParse(data);
     if (!validationResult.success) {
       return NextResponse.json({ error: 'Erro de validação' }, { status: 400 });
