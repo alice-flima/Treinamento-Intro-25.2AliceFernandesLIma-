@@ -1,4 +1,4 @@
-import CompraService from '../../../../services/compras';
+import CompraService from '../../services/compras';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { compraSchema } from '@/app/(backend)/schemas/compra.schema';
