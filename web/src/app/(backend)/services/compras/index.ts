@@ -1,4 +1,3 @@
-import { compraSchema } from "../../schemas/compra.schema";
 import prisma from "../db"; 
 import { Compra, Prisma, CompraStatus } from '@/generated/prisma';
 
