@@ -3,9 +3,8 @@ import CategoriaService from '../../services/categoria';
 import { categoriaSchema } from "@/app/(backend)/schemas/categoria.schema";
 import { ZodError } from "zod";
 import { handleError } from "../errors/Erro";
-import { api_middleware } from "@/middleware/auth";
 
-export const GET = api_middleware(async (request: any)=> {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -28,11 +27,11 @@ export const GET = api_middleware(async (request: any)=> {
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
-});
+}
 
 
 
-export const POST = api_middleware(async (request: any)=> {
+export async function POST(request: NextRequest) {
   try{
     const body = await request.json();
     const validationResult = categoriaSchema.safeParse(body);
@@ -48,10 +47,10 @@ export const POST = api_middleware(async (request: any)=> {
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
-});
+}
 
 
-export const PUT = api_middleware(async (request: any)=> {
+export async function PUT(request: NextRequest) {
   try{
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -75,9 +74,9 @@ export const PUT = api_middleware(async (request: any)=> {
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
-});
+}
 
-export const DELETE = api_middleware(async (request: any)=> {
+export async function DELETE(request: NextRequest) {
   try{
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -93,5 +92,5 @@ export const DELETE = api_middleware(async (request: any)=> {
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
-});
+}
 

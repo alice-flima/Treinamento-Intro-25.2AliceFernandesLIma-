@@ -6,9 +6,8 @@ import prisma from '@/app/(backend)/services/db';
 import { handleError } from '../errors/Erro';
 import { ZodError } from 'zod';
 import { auth } from '@/auth';
-import { api_middleware } from '@/middleware/auth';
 
-export const GET = api_middleware(async (request: any)=> { 
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -25,9 +24,9 @@ export const GET = api_middleware(async (request: any)=> {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-});
+}
 
-export const POST = api_middleware(async (request: any)=> {
+export async function POST(request: NextRequest) {
   try {
     
      ////para poder testar as rotas no bruno:
@@ -60,8 +59,8 @@ export const POST = api_middleware(async (request: any)=> {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-});
-export const PUT = api_middleware(async (request: any)=> {
+}
+export async function PUT(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
@@ -112,8 +111,8 @@ export const PUT = api_middleware(async (request: any)=> {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-});
-export const  DELETE = api_middleware(async (request: any)=> {
+}
+export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
@@ -128,8 +127,8 @@ export const  DELETE = api_middleware(async (request: any)=> {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-});
-export const PATCH = api_middleware(async (request: any)=> {
+}
+export async function PATCH(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id') || '';
@@ -154,4 +153,4 @@ export const PATCH = api_middleware(async (request: any)=> {
     return NextResponse.json(erro, { status: erro.statusCode });
 
   }
-});
+}

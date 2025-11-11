@@ -1,10 +1,9 @@
 import EstatisticasService from '../../services/Estatisticas';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { handleError } from '../errors/Erro';
 import { ZodError } from 'zod';
-import { api_middleware } from '@/middleware/auth';
 
-export const GET = api_middleware(async (request: any)=> {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('id');
@@ -28,4 +27,4 @@ export const GET = api_middleware(async (request: any)=> {
     const erro = await handleError(error);
     return NextResponse.json(erro, { status: erro.statusCode });
   }
-});
+}
