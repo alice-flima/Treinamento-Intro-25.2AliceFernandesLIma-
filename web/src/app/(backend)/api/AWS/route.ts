@@ -15,8 +15,6 @@ const client = new S3Client({
 
 export async function GET(request: NextRequest) {
   const file = request.nextUrl.searchParams.get("file");
-  const type =
-    request.nextUrl.searchParams.get("type") ?? "application/octet-stream";
 
   if (!file) {
     const erro = await handleError(new ZodError([]));
@@ -26,8 +24,6 @@ export async function GET(request: NextRequest) {
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET!,
     Key: file,
-    ContentType: type,
-    ChecksumAlgorithm: undefined, 
   });
 
   const url = await getSignedUrl(client, command, { expiresIn: 3600 });
