@@ -7,26 +7,13 @@ import { handleError } from "../errors/Erro";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      const erro = await handleError(new ZodError([]));
-      return NextResponse.json(erro, { status: erro.statusCode });
-    }
-
-    const categoria = await CategoriaService.getById(id);
-
-    if (!categoria) {
-      const erro = await handleError(new ZodError([]));
-      return NextResponse.json(erro, { status: erro.statusCode });
-    }
-
-    return NextResponse.json(categoria);
-  
-  } catch (error) {
-    const erro = await handleError(error);
-    return NextResponse.json(erro, { status: erro.statusCode });
-  }
+    const categorias = await CategoriaService.getAll();
+      return NextResponse.json(categorias);
+      }
+      catch (error) {
+        const erro = await handleError(error);
+        return NextResponse.json(erro, { status: erro.statusCode });
+      }
 }
 
 
