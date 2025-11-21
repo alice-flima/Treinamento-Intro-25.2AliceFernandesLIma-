@@ -4,8 +4,6 @@ import { produtoSchema } from '@/app/(backend)/schemas/produtos.schema';
 import { handleError } from '../errors/Erro';
 import { ZodError } from 'zod';
 
-
-
 export async function GET(){
   try{
   const produtos = await ProdutoService.getAll();

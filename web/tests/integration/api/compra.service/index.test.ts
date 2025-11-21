@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import CompraService from "@/app/(backend)/services/compras";
-import ProdutoService from "../../services/Produtos";
+import ProdutoService from "@/app/(backend)/services/Produtos";
 
 describe("CompraService", () => {
   it("deve criar um produto", async () => {
