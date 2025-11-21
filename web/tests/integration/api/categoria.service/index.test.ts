@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import CategoriaService from "../../services/categoria";
+import CategoriaService from "../../../../src/app/(backend)/services/categoria";
 
 describe("CompraService", () => {
   
