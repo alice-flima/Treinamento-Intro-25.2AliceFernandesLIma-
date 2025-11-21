@@ -3,7 +3,7 @@ import CompraService from "@/app/(backend)/services/compras";
 import ProdutoService from "@/app/(backend)/services/Produtos";
 
 describe("CompraService", () => {
-  it("deve criar um produto", async () => {
+  it("deve criar uma compra", async () => {
     const produto = await ProdutoService.create({
       nome: "Pão",
       descricao: "Bla",
