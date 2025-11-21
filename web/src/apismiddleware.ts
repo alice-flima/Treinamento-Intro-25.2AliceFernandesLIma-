@@ -26,7 +26,7 @@ export async function apiMiddleware(request: NextRequest) {
       );
       return NextResponse.json(erro, { status: 401 });
     }
-
+  
     return NextResponse.next();
 
   } catch (error) {
