@@ -46,21 +46,21 @@ export class CompraService {
     public async getById(id: string): Promise<Compra | null> {
         return prisma.compra.findUnique({
             where: { id },
-           include: {
-      produtos: {
-        select: { produtoId: true }
-      }
-    },
+            include: {
+                produtos: true,
+            }
         });
     }
     public async getAll(userId: string): Promise<Compra[]> {
         return prisma.compra.findMany({
             where: { userId },
             include: {
-      produtos: {
-        select: { produtoId: true }
-      }
-    },
+                produtos: {
+                    include: {
+                        produto: true, 
+                    },
+                },
+            },
         });
     }
     public async update(id: string, data: Prisma.CompraUpdateInput): Promise<Compra> {

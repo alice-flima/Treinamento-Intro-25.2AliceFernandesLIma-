@@ -7,7 +7,6 @@ import ProdutoCategoria from "@/app/(backend)/services/ProdutoCategoria";
 import prisma from '@/app/(backend)/services/db';
 import { afterEach } from "vitest";
 afterEach(async () => {
-  await prisma.produtoCategoria.deleteMany();
   await prisma.categoria.deleteMany();
   await prisma.produto.deleteMany();
 });

@@ -1,104 +1,108 @@
-import prisma from "../db";
+import prisma from "../db"; 
 import { Categoria } from "@/generated/prisma";
 
+export interface CategoriaDTO extends Omit<Categoria, 'produtos'> {
+  produtos: string[];
+}
+
 export class CategoriaService {
-public async create(data: any): Promise<any> {
-  const produtos = data.produtos ?? [];
-  delete data.produtos;
+  
+  public async create(data: any): Promise<CategoriaDTO> {
+    const { nome, produtos } = data;
 
-  const categoria = await prisma.categoria.create({
-    data: {
-      ...data,
-      produtos: produtos.length
-        ? {
-            create: produtos.map((produtoId: string) => ({
-              produto: { connect: { id: produtoId } }
-            }))
-          }
-        : undefined
-    },
-    include: {
-      produtos: true 
-    }
-  });
+    const produtosIds: string[] = Array.isArray(produtos) ? produtos : [];
 
-  return {
-    ...categoria,
-    produtos: categoria.produtos.map((p) => p.produtoId)
-  };
-}
-public async getAll(): Promise<any[]> {
-  const categorias = await prisma.categoria.findMany({
-    include: {
-      produtos: {
-        select: { produtoId: true }
-      }
-    },
-  });
-
-  return categorias.map(categoria => ({
-    ...categoria,
-    produtos: categoria.produtos.map(p => p.produtoId)
-  }));
-}
-public async getById(id: string): Promise<any | null> {
-  const categoria = await prisma.categoria.findUnique({
-    where: { id },
-    include: {
-      produtos: {
-        select: { produtoId: true }
-      }
-    }
-  });
-
-  if (!categoria) return null;
-
-  return {
-    ...categoria,
-    produtos: categoria.produtos.map(p => p.produtoId)
-  };
-}
-
-public async update(id: string, data: any): Promise<any> {
-  const { produtos, ...rest } = data;
-
-  const categoria = await prisma.categoria.update({
-    where: { id },
-    data: {
-      ...rest, 
-      ...(produtos !== undefined && {
+    const categoria = await prisma.categoria.create({
+      data: {
+        nome: nome,
+        produtos: produtosIds.length > 0
+          ? {
+              connect: produtosIds.map((id) => ({ id }))
+            }
+          : undefined
+      },
+      include: {
         produtos: {
-          deleteMany: {},
-          ...(produtos.length > 0 && {
-            create: produtos.map((produtoId: string) => ({ produtoId }))
-          })
+          select: { id: true }
         }
-      })
-    },
-    include: {
-      produtos: {
-        select: { produtoId: true }
       }
-    }
-  });
+    });
 
-  return {
-    ...categoria,
-    produtos: categoria.produtos.map(p => p.produtoId)
-  };
-}
+    return this.mapToDto(categoria);
+  }
 
+  public async getAll(): Promise<CategoriaDTO[]> {
+    const categorias = await prisma.categoria.findMany({
+      include: {
+        produtos: {
+          select: { id: true }
+        }
+      },
+    });
 
-  public async delete(id: string): Promise<Categoria> {
-  await prisma.produtoCategoria.deleteMany({
-    where: { categoriaId: id }
-  });
+    return categorias.map(categoria => this.mapToDto(categoria));
+  }
 
-  return prisma.categoria.delete({
-    where: { id }
-  });
-}
+  public async getById(id: string): Promise<CategoriaDTO | null> {
+    const categoria = await prisma.categoria.findUnique({
+      where: { id },
+      include: {
+        produtos: {
+          select: { id: true }
+        }
+      }
+    });
 
+    if (!categoria) return null;
+
+    return this.mapToDto(categoria);
+  }
+
+  public async update(id: string, data: any): Promise<CategoriaDTO> {
+    const { nome, produtos } = data;
+    
+    const produtosIds: string[] | undefined = Array.isArray(produtos) ? produtos : undefined;
+
+    const categoria = await prisma.categoria.update({
+      where: { id },
+      data: {
+        ...(nome && { nome }),
+
+        ...(produtosIds !== undefined && {
+          produtos: {
+            set: produtosIds.map((id) => ({ id }))
+          }
+        })
+      },
+      include: {
+        produtos: {
+          select: { id: true }
+        }
+      }
+    });
+
+    return this.mapToDto(categoria);
+  }
+
+  public async delete(id: string): Promise<CategoriaDTO> {
+    const categoria = await prisma.categoria.delete({
+      where: { id },
+      include: {
+        produtos: {
+          select: { id: true }
+        }
+      }
+    });
+
+    return this.mapToDto(categoria);
+  }
+
+  private mapToDto(categoria: any): CategoriaDTO {
+    return {
+      ...categoria,
+      produtos: categoria.produtos ? categoria.produtos.map((p: any) => p.id) : []
+    };
+  }
 }
 
 export default new CategoriaService();
