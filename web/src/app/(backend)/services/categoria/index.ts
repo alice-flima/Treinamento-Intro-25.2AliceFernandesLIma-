@@ -1,15 +1,23 @@
-import prisma from "../db"; 
+import prisma from "../db";
 import { Categoria } from "@/generated/prisma";
+
+interface ICategoriaInput {
+  nome: string;
+  produtos?: string[];
+}
 
 export interface CategoriaDTO extends Omit<Categoria, 'produtos'> {
   produtos: string[];
 }
 
+type CategoriaDoBanco = Categoria & {
+  produtos: { id: string }[];
+};
+
 export class CategoriaService {
   
-  public async create(data: any): Promise<CategoriaDTO> {
+  public async create(data: ICategoriaInput): Promise<CategoriaDTO> {
     const { nome, produtos } = data;
-
     const produtosIds: string[] = Array.isArray(produtos) ? produtos : [];
 
     const categoria = await prisma.categoria.create({
@@ -28,7 +36,7 @@ export class CategoriaService {
       }
     });
 
-    return this.mapToDto(categoria);
+    return this.mapToDto(categoria as CategoriaDoBanco);
   }
 
   public async getAll(): Promise<CategoriaDTO[]> {
@@ -40,7 +48,7 @@ export class CategoriaService {
       },
     });
 
-    return categorias.map(categoria => this.mapToDto(categoria));
+    return categorias.map((categoria) => this.mapToDto(categoria as CategoriaDoBanco));
   }
 
   public async getById(id: string): Promise<CategoriaDTO | null> {
@@ -55,19 +63,17 @@ export class CategoriaService {
 
     if (!categoria) return null;
 
-    return this.mapToDto(categoria);
+    return this.mapToDto(categoria as CategoriaDoBanco);
   }
 
-  public async update(id: string, data: any): Promise<CategoriaDTO> {
+  public async update(id: string, data: Partial<ICategoriaInput>): Promise<CategoriaDTO> {
     const { nome, produtos } = data;
-    
-    const produtosIds: string[] | undefined = Array.isArray(produtos) ? produtos : undefined;
+    const produtosIds = Array.isArray(produtos) ? produtos : undefined;
 
     const categoria = await prisma.categoria.update({
       where: { id },
       data: {
         ...(nome && { nome }),
-
         ...(produtosIds !== undefined && {
           produtos: {
             set: produtosIds.map((id) => ({ id }))
@@ -81,7 +87,7 @@ export class CategoriaService {
       }
     });
 
-    return this.mapToDto(categoria);
+    return this.mapToDto(categoria as CategoriaDoBanco);
   }
 
   public async delete(id: string): Promise<CategoriaDTO> {
@@ -94,15 +100,16 @@ export class CategoriaService {
       }
     });
 
-    return this.mapToDto(categoria);
+    return this.mapToDto(categoria as CategoriaDoBanco);
   }
 
-  private mapToDto(categoria: any): CategoriaDTO {
+  private mapToDto(categoria: CategoriaDoBanco): CategoriaDTO {
     return {
       ...categoria,
-      produtos: categoria.produtos ? categoria.produtos.map((p: any) => p.id) : []
+      produtos: categoria.produtos.map((p) => p.id)
     };
   }
 }
 
-export default new CategoriaService();
+const categoriaService = new CategoriaService();
+export default categoriaService;
