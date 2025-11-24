@@ -9,6 +9,13 @@ const ROUTE_CONFIG = {
   specialRoutes: ["/admin"],
 };
 
+interface UserWithRole {
+  role?: Role;
+  id?: string;
+  email?: string;
+  [key: string]: unknown;
+}
+
 function matchesAnyPattern(pathname: string, patterns: string[]): boolean {
   return patterns.some(pattern => {
     if (pattern.endsWith('**')) return pathname.startsWith(pattern.slice(0, -2));
@@ -27,15 +34,14 @@ export async function pagesMiddleware(request: NextRequest) {
   const { data: session } = await authClientEdge.getSession({
     fetchOptions: {
       headers: {
-        // Repassa o cookie para validação
         cookie: request.headers.get("cookie") || "",
       },
     },
   });
 
-  const userRole = (session?.user as any)?.role as Role | undefined;
+  const user = session?.user as UserWithRole | undefined;
+  const userRole = user?.role;
   const isAuthenticated = !!session?.user;
-
 
   if (pathname === "/admin") {
     if (!isAuthenticated) return NextResponse.next();
