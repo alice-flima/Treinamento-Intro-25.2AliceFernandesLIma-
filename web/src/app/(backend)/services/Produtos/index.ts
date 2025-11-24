@@ -1,22 +1,34 @@
 import prisma from "../db";
 import { Produto } from "@/generated/prisma";
 
+interface IProdutoInput {
+  nome: string;
+  descricao: string;
+  preco: number;
+  imagem?: string | null;
+  categorias?: string[];
+}
+
 export interface ProdutoDTO extends Omit<Produto, 'categorias'> {
   categorias: string[];
 }
 
+type ProdutoDoBanco = Produto & {
+  categorias: { id: string }[];
+};
+
 export class ProdutoService {
   
-  public async create(data: any): Promise<ProdutoDTO> {
-    const categoriasIds = data.categorias ?? [];
-    delete data.categorias;
+  public async create(data: IProdutoInput): Promise<ProdutoDTO> {
+    const { categorias, ...dadosPrisma } = data;
+    const categoriasIds = categorias ?? [];
 
     const produto = await prisma.produto.create({
       data: {
-        ...data,
+        ...dadosPrisma,
         categorias: categoriasIds.length > 0
           ? {
-              connect: categoriasIds.map((id: string) => ({ id }))
+              connect: categoriasIds.map((id) => ({ id }))
             }
           : undefined
       },
@@ -27,7 +39,7 @@ export class ProdutoService {
       }
     });
 
-    return this.mapToDto(produto);
+    return this.mapToDto(produto as ProdutoDoBanco);
   }
 
   public async getById(id: string): Promise<ProdutoDTO | null> {
@@ -41,21 +53,20 @@ export class ProdutoService {
     });
 
     if (!produto) return null;
-    return this.mapToDto(produto);
+    return this.mapToDto(produto as ProdutoDoBanco);
   }
 
-  public async update(id: string, data: any): Promise<ProdutoDTO> {
-    const categoriasIds = data.categorias;
-    delete data.categorias;
+  public async update(id: string, data: Partial<IProdutoInput>): Promise<ProdutoDTO> {
+    const { categorias, ...dadosPrisma } = data;
+    const categoriasIds = categorias;
 
     const produto = await prisma.produto.update({
       where: { id },
       data: {
-        ...data,
-        // Se categorias forem enviadas, substitui a lista inteira 
+        ...dadosPrisma,
         ...(categoriasIds !== undefined && {
           categorias: {
-            set: categoriasIds.map((id: string) => ({ id }))
+            set: categoriasIds.map((id) => ({ id }))
           }
         })
       },
@@ -66,7 +77,7 @@ export class ProdutoService {
       }
     });
 
-    return this.mapToDto(produto);
+    return this.mapToDto(produto as ProdutoDoBanco);
   }
 
   public async delete(id: string): Promise<ProdutoDTO> {
@@ -77,7 +88,7 @@ export class ProdutoService {
       }
     });
     
-    return this.mapToDto(produto);
+    return this.mapToDto(produto as ProdutoDoBanco);
   }
 
   public async getAll(): Promise<ProdutoDTO[]> {
@@ -89,15 +100,16 @@ export class ProdutoService {
       }
     });
 
-    return produtos.map(p => this.mapToDto(p));
+    return produtos.map((p) => this.mapToDto(p as ProdutoDoBanco));
   }
 
-  private mapToDto(produto: any): ProdutoDTO {
+  private mapToDto(produto: ProdutoDoBanco): ProdutoDTO {
     return {
       ...produto,
-      categorias: produto.categorias.map((c: any) => c.id)
+      categorias: produto.categorias.map((c) => c.id)
     };
   }
 }
 
-export default new ProdutoService();
+const produtoService = new ProdutoService();
+export default produtoService;
